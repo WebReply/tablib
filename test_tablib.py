@@ -306,6 +306,33 @@ class TablibTestCase(unittest.TestCase):
 
         self.assertEqual(html, d.html)
 
+    def _simple_text(self, dataset):
+        # - very simplified version of .text property
+        col_lens = [len(item if item is not None else '') for item in dataset.headers]
+        for row in dataset:
+            for idx, item in enumerate(row):
+                col_lens[idx] = max(col_lens[idx], len(str(item if item is not None else '')))
+        
+        fmt = "  ".join(["%%-%ss" % n for n in col_lens])
+        lines = []
+        lines.append(fmt % tuple([item if item is not None else '' for item in dataset.headers]))
+        lines.append(fmt % tuple(["="*n for n in col_lens]))
+        for row in dataset:
+            lines.append(fmt % tuple([item if item is not None else '' for item in row]))
+        text = "\n".join(lines)
+        return text
+        
+    def test_text_export(self):
+        """TEXT export"""
+        text = self._simple_text(self.founders)
+        self.assertEqual(text, self.founders.text)
+
+
+    def test_text_export_none_value(self):
+        """TEXT export_none_value"""
+        d = tablib.Dataset(['foo', None, 'bar'], headers=['foo', None, 'bar'])
+        text = self._simple_text(d)
+        self.assertEqual(text, d.text)
 
     def test_unicode_append(self):
         """Passes in a single unicode character and exports."""
@@ -321,7 +348,7 @@ class TablibTestCase(unittest.TestCase):
         data.xlsx
         data.ods
         data.html
-
+        data.text
 
     def test_book_export_no_exceptions(self):
         """Test that various exports don't error out."""
@@ -334,6 +361,8 @@ class TablibTestCase(unittest.TestCase):
         book.xls
         book.xlsx
         book.ods
+        book.html
+        book.text
 
 
     def test_json_import_set(self):

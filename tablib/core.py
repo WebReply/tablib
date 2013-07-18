@@ -536,6 +536,15 @@ class Dataset(object):
 
 
     @property
+    def text():
+        """A TEXT representation of the :class:`Dataset` object.
+
+        ..notice:: This method can be used for export only.
+        """
+        pass
+
+
+    @property
     def json():
         """A JSON representation of the :class:`Dataset` object. If headers have been
         set, a JSON list of objects will be returned. If no headers have
